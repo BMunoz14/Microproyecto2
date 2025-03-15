@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 27  # Umbral para escalar
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 30  # Reduce más rápido
+      policies:
+        - type: Percent
+          value: 50  # Baja hasta un 50% de pods por minuto
+          periodSeconds: 60
